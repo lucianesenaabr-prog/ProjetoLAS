@@ -2,3 +2,5 @@
 # Onde achar: página "Dados Abertos" da PGFN (gov.br/pgfn). Use os grupos "Dívida Ativa Geral" e "Dívida Previdenciária"
 # (a PGFN orienta somar os dois para o previdenciário). Os arquivos são divididos por UF: liste todos.
 # Linhas começadas com # são ignoradas.
+https://dadosabertos.pgfn.gov.br/2026_trimestre_03/Dados_abertos_Sistema_SIDA.zip
+https://dadosabertos.pgfn.gov.br/2026_trimestre_03/Dados_abertos_Previdenciario.zip
