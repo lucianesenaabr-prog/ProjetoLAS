@@ -1,0 +1,4 @@
+# Cole aqui, uma por linha, a URL do .zip da dívida de FGTS (dados abertos da PGFN).
+# Onde achar: página "Dados Abertos" da PGFN (gov.br/pgfn), grupo "Dívida FGTS". Use o trimestre mais recente.
+# Linhas começadas com # são ignoradas.
+https://dadosabertos.pgfn.gov.br/2026_trimestre_03/Dados_abertos_FGTS.zip

@@ -56,7 +56,7 @@ details .gl{display:grid;grid-template-columns:96px 1fr;gap:6px 14px;padding:10p
 <div class="err" id="err"></div>
 <div class="dm" id="exemplos">Exemplos grátis (dados fictícios): <a data-d="0">Risco alto</a><a data-d="1">Risco baixo</a><a data-d="2">Risco crítico</a></div></div></section>
 <main id="out"></main>
-<section class="meto" id="metodo"><div class="lab">Como o risco é calculado · Matriz v1.0</div><ul>
+<section class="meto" id="metodo"><div class="lab">Como o risco é calculado · Matriz v1.1</div><ul>
 <li>Cada sinal tem um nível: Crítico, Relevante (30 pontos), Moderado (15) ou Baixo (5).</li>
 <li>Um sinal Crítico confirmado define o resultado, sem depender da soma.</li>
 <li>Fonte oficial vale 100%. Imprensa confirmada vale 70%. Imprensa não confirmada não pontua.</li>
@@ -70,7 +70,7 @@ details .gl{display:grid;grid-template-columns:96px 1fr;gap:6px 14px;padding:10p
 <dialog id="lead"><form id="lf"><div class="lab">Baixar dossiê</div><p class="mut">Informe seus dados para baixar o PDF. Usamos só para contato sobre o dossiê (LGPD).</p><input name="nome" placeholder="Nome" required><input name="email" type="email" placeholder="E-mail" required><input name="empresa" placeholder="Empresa"><label><input type="checkbox" required>Autorizo o uso dos meus dados para esse contato.</label><div class="seg"><button class="bt pk">Baixar PDF</button><button type="button" class="bt" onclick="document.getElementById('lead').close()">Cancelar</button></div></form></dialog>
 
 <script id="eng">
-const MV='1.0',PTS={R:30,M:15,B:5},CAP=45;
+const MV='1.1',PTS={R:30,M:15,B:5},CAP=45;
 const LV={C:'Crítico',R:'Relevante',M:'Moderado',B:'Baixo',N:'Não avaliado'};
 const LC={C:'var(--C)',R:'var(--R)',M:'var(--M)',B:'var(--B)',N:'var(--I)'};
 const OC={'Crítico':'var(--C)','Alto':'var(--R)','Moderado':'var(--M)','Baixo':'var(--B)','Inconclusivo':'var(--I)'};
@@ -87,6 +87,7 @@ const items=d=>{const c=d.cnpj.replace(/\D/g,''),n=d.razao,s=(d.socios[0]||{}).n
 ['SAN-04','Sócio é PEP (pessoa politicamente exposta)','Exige diligência reforçada; não é negativo por si.','R',0,1,G('"'+s+'" pessoa politicamente exposta')],
 ['SAN-05','CEPIM: impedida de receber verbas públicas','Impedimento em convênios e repasses.','R',0,1,P],
 ['FIS-01','Dívida ativa com a União (PGFN)','Débitos inscritos aumentam o risco de inadimplência.','R','M',1,'https://www.listaauxiliar.pgfn.gov.br'],
+['FIS-05','Dívida de FGTS com a União (PGFN)','Débitos de FGTS indicam atraso em encargos trabalhistas.','R','M',1,'https://www.listaauxiliar.pgfn.gov.br'],
 ['FIS-03','Certidão de regularidade fiscal (CND)','Sem certidão negativa, há pendência fiscal.','M',0,1,'https://solucoes.receita.fazenda.gov.br/Servicos/certidaointernet/PJ/Emitir'],
 ['FIS-04','CADIN: pendência com órgãos federais','Registro de inadimplência com a União.','M',0,1,G('CADIN consulta '+c)],
 ['JUD-01','Falência decretada','Empresa em processo de liquidação.','C',0,1,G('"'+n+'" falência decretada')],
@@ -111,7 +112,7 @@ if(d.cnaesN>=12)A('CAD-08','B','Atividades muito dispersas',d.cnaesN+' atividade
 if(!ei&&d.socios.length===1)A('CAD-09','B','Sócio único','Apenas um sócio na base pública.');
 if(!d.socios.length)A('CAD-10','N','Sócios não informados','A base pública não trouxe o quadro societário.');
 return f}
-const COV=['SAN-01','SAN-05','FIS-01'];
+const COV=['SAN-01','SAN-02','SAN-05','FIS-01','FIS-05'];
 function evalu(d,res,fin,now){const fl=auto(d,now),M=MULT[fin]||{},ck=items(d),act=COV.filter(id=>!res[id]||res[id].s!=='n');
 COV.forEach(id=>{const r=res[id],i=ck.find(x=>x[0]===id);if(r&&(r.s==='f'||r.s==='g'))fl.push({id,l:r.s==='g'?i[4]:i[3],t:i[1],w:(r.ev&&r.ev[0])||i[2],k:i[5],c:id.slice(0,3)})});
 const ans=act.filter(id=>res[id]&&res[id].s!=='x').length,tot=act.length;
@@ -121,9 +122,9 @@ const lv=crit?'Crítico':cov<.7?'Inconclusivo':sc>=45?'Alto':sc>=20?'Moderado':'
 fl.sort((a,b)=>'CRMBN'.indexOf(a.l)-'CRMBN'.indexOf(b.l)||b.p-a.p);return{fl,sc,cov,lv,ans,tot}}
 const mk=(d,res)=>({d,res});
 const DEMOS=[
-mk({razao:'ALFA LOGÍSTICA E TRANSPORTES LTDA',fant:'Alfa Express',cnpj:'12.345.678/0001-90',sit:'SUSPENSA',sitData:'2026-09-10',abertura:'2026-06-20',nat:'Sociedade Empresária Limitada',porte:'MICRO EMPRESA',cap:1000,cnae:'Transporte rodoviário de carga',cnaesN:3,compl:'Apto 4',end:'Rua das Acácias, 120, Apto 4, Centro, Guarulhos/SP',socios:[{n:'JOÃO P. DA SILVA',q:'Sócio-Administrador',e:'2026-06-20'},{n:'MARIA L. SOUZA',q:'Sócio',e:'2026-09-02'}]},{'SAN-01':{s:'ok'},'SAN-05':{s:'ok'},'FIS-01':{s:'g',ev:['Dívida ativa: R$ 64.200,00 em cobrança (2 inscrições). Dado fictício.']}}),
-mk({razao:'HORIZONTE TECNOLOGIA S.A.',fant:'Horizonte Tech',cnpj:'98.765.432/0001-10',sit:'ATIVA',sitData:'2008-04-02',abertura:'2008-04-02',nat:'Sociedade Anônima Fechada',porte:'DEMAIS',cap:25000000,cnae:'Desenvolvimento de software sob encomenda',cnaesN:4,compl:'Andar 12',end:'Av. Paulista, 1000, Andar 12, Bela Vista, São Paulo/SP',socios:[{n:'ANA C. FERREIRA',q:'Diretora Presidente',e:'2008-04-02'},{n:'CARLOS M. LIMA',q:'Diretor Financeiro',e:'2012-06-20'}]},{'SAN-01':{s:'ok'},'SAN-05':{s:'ok'},'FIS-01':{s:'ok'}}),
-mk({razao:'NOVA ESTRELA SERVIÇOS LTDA',fant:'Nova Estrela',cnpj:'45.678.901/0001-23',sit:'ATIVA',sitData:'2021-05-12',abertura:'2021-05-12',nat:'Sociedade Empresária Limitada',porte:'EMPRESA DE PEQUENO PORTE',cap:50000,cnae:'Serviços de manutenção predial',cnaesN:6,compl:'',end:'Rua do Comércio, 45, Centro, Campinas/SP',socios:[{n:'PEDRO R. ALVES',q:'Sócio-Administrador',e:'2021-05-12'},{n:'LÚCIA T. MOURA',q:'Sócio',e:'2021-05-12'},{n:'RAUL G. PINTO',q:'Sócio',e:'2023-02-01'}]},{'SAN-01':{s:'f',ev:['CEIS · Suspensão · PREFEITURA FICTÍCIA · 01/03/2026 a sem data final']},'SAN-05':{s:'ok'},'FIS-01':{s:'f',ev:['Dívida ativa: R$ 480.000,00 em cobrança (5 inscrições). Dado fictício.']}})];
+mk({razao:'ALFA LOGÍSTICA E TRANSPORTES LTDA',fant:'Alfa Express',cnpj:'12.345.678/0001-90',sit:'SUSPENSA',sitData:'2026-09-10',abertura:'2026-06-20',nat:'Sociedade Empresária Limitada',porte:'MICRO EMPRESA',cap:1000,cnae:'Transporte rodoviário de carga',cnaesN:3,compl:'Apto 4',end:'Rua das Acácias, 120, Apto 4, Centro, Guarulhos/SP',socios:[{n:'JOÃO P. DA SILVA',q:'Sócio-Administrador',e:'2026-06-20'},{n:'MARIA L. SOUZA',q:'Sócio',e:'2026-09-02'}]},{'SAN-01':{s:'ok'},'SAN-05':{s:'ok'},'SAN-02':{s:'ok'},'FIS-05':{s:'ok'},'FIS-01':{s:'g',ev:['Dívida ativa: R$ 64.200,00 em cobrança (2 inscrições). Dado fictício.']}}),
+mk({razao:'HORIZONTE TECNOLOGIA S.A.',fant:'Horizonte Tech',cnpj:'98.765.432/0001-10',sit:'ATIVA',sitData:'2008-04-02',abertura:'2008-04-02',nat:'Sociedade Anônima Fechada',porte:'DEMAIS',cap:25000000,cnae:'Desenvolvimento de software sob encomenda',cnaesN:4,compl:'Andar 12',end:'Av. Paulista, 1000, Andar 12, Bela Vista, São Paulo/SP',socios:[{n:'ANA C. FERREIRA',q:'Diretora Presidente',e:'2008-04-02'},{n:'CARLOS M. LIMA',q:'Diretor Financeiro',e:'2012-06-20'}]},{'SAN-01':{s:'ok'},'SAN-05':{s:'ok'},'SAN-02':{s:'ok'},'FIS-05':{s:'ok'},'FIS-01':{s:'ok'}}),
+mk({razao:'NOVA ESTRELA SERVIÇOS LTDA',fant:'Nova Estrela',cnpj:'45.678.901/0001-23',sit:'ATIVA',sitData:'2021-05-12',abertura:'2021-05-12',nat:'Sociedade Empresária Limitada',porte:'EMPRESA DE PEQUENO PORTE',cap:50000,cnae:'Serviços de manutenção predial',cnaesN:6,compl:'',end:'Rua do Comércio, 45, Centro, Campinas/SP',socios:[{n:'PEDRO R. ALVES',q:'Sócio-Administrador',e:'2021-05-12'},{n:'LÚCIA T. MOURA',q:'Sócio',e:'2021-05-12'},{n:'RAUL G. PINTO',q:'Sócio',e:'2023-02-01'}]},{'SAN-01':{s:'f',ev:['CEIS · Suspensão · PREFEITURA FICTÍCIA · 01/03/2026 a sem data final']},'SAN-05':{s:'ok'},'SAN-02':{s:'ok'},'FIS-05':{s:'ok'},'FIS-01':{s:'f',ev:['Dívida ativa: R$ 480.000,00 em cobrança (5 inscrições). Dado fictício.']}})];
 </script>
 <script>
 const $=id=>document.getElementById(id),LIM=3,LIMITE=false,FORM_URL='',CONTATO='https://www.linkedin.com/in/luciane-sena-61a923134';
@@ -155,12 +156,14 @@ async function jget(u){const r=await fetch(u);if(r.status===404)return null;if(!
 async function loadAuto(){if(cur.demo||cur.al)return;cur.al=1;const c=cur,cn=c.d.cnpj.replace(/\D/g,''),p=cn.slice(0,3),set=(id,s,ev)=>{c.res[id]={s,ev}};
 try{const m=await jget('dados/sancoes/meta.json');if(!m){set('SAN-01','n');set('SAN-05','n')}else{c.meta.sancoes=m;const sh=await jget('dados/sancoes/'+p+'.json'),rec=(sh||{})[cn]||[],v=k=>rec.filter(x=>x.v&&k.includes(x.c)),ev=a=>a.map(x=>x.c+' · '+x.t+' · '+x.o+' · '+(x.i||'?')+' a '+(x.f||'sem data final')),a=v(['CEIS','CNEP']),b=v(['CEPIM']);set('SAN-01',a.length?'f':'ok',ev(a));set('SAN-05',b.length?'f':'ok',ev(b))}}catch(e){set('SAN-01','x');set('SAN-05','x')}
 try{const m=await jget('dados/pgfn/meta.json');if(!m)set('FIS-01','n');else{c.meta.pgfn=m;const sh=await jget('dados/pgfn/'+p+'.json'),x=(sh||{})[cn],v=x?x.i:0;set('FIS-01',v>=1e5?'f':v>0?'g':'ok',x&&v>0?['Dívida ativa: '+brl(v)+' em cobrança ('+x.n+' inscrições; total inscrito '+brl(x.t)+')']:[])}}catch(e){set('FIS-01','x')}
+try{const m=await jget('dados/fgts/meta.json');if(!m)set('FIS-05','n');else{c.meta.fgts=m;const sh=await jget('dados/fgts/'+p+'.json'),x=(sh||{})[cn],v=x?x.i:0;set('FIS-05',v>=1e5?'f':v>0?'g':'ok',x&&v>0?['Dívida de FGTS: '+brl(v)+' em cobrança ('+x.n+' inscrições; total inscrito '+brl(x.t)+')']:[])}}catch(e){set('FIS-05','x')}
+try{const m=await jget('dados/listasuja/meta.json');if(!m)set('SAN-02','n');else{c.meta.listasuja=m;const sh=await jget('dados/listasuja/'+p+'.json'),rec=(sh||{})[cn]||[];set('SAN-02',rec.length?'f':'ok',rec.map(x=>'Cadastro de Empregadores (MTE) · incluído em '+(x.i||'data não lida')))}}catch(e){set('SAN-02','x')}
 if(cur===c)draw()}
 function draw(){const{d,res,fin,ts,demo}=cur,r=evalu(d,res,fin,ts),ck=items(d),pend=COV.some(id=>!res[id]),lv=pend?'Consultando':r.lv,col=OC[lv]||'var(--I)',top=r.fl.filter(x=>x.l!=='N').slice(0,3),row=(k,v)=>`<dt>${k}</dt><dd>${esc(v||'—')}</dd>`;
 const AUT=COV.map(id=>{const i=ck.find(x=>x[0]===id),x=res[id]||{},s=x.s,t=!s?'Consultando…':s==='ok'?'Sem registro':s==='x'?'Fonte indisponível':s==='n'?'Fonte ainda não publicada':'Encontrado',c=!s||s==='x'||s==='n'?'var(--I)':s==='ok'?'var(--B)':LC[s==='g'?i[4]:i[3]];return `<div class="ck" style="--c:${c}"><div><b>${id} · ${esc(i[1])}</b><br><span class="mut">${esc((x.ev||[]).join(' | ')||i[2])}</span></div><b style="color:${c}">${t}</b></div>`}).join('');
-const NC=ck.filter(i=>!COV.includes(i[0])),M=cur.meta||{},fo=[M.sancoes&&'CEIS, CNEP e CEPIM atualizados em '+dt(M.sancoes.data),M.pgfn&&'PGFN: base processada em '+dt(M.pgfn.data)].filter(Boolean).join(' · ');
+const NC=ck.filter(i=>!COV.includes(i[0])),M=cur.meta||{},fo=[M.sancoes&&'CEIS, CNEP e CEPIM atualizados em '+dt(M.sancoes.data),M.pgfn&&'PGFN: base processada em '+dt(M.pgfn.data),M.fgts&&'FGTS: base processada em '+dt(M.fgts.data),M.listasuja&&'Lista suja (MTE) atualizada em '+(M.listasuja.ref||dt(M.listasuja.data))].filter(Boolean).join(' · ');
 $('out').innerHTML=(demo?'<div class="box mut">Exemplo com dados fictícios, só para demonstrar o dossiê.</div>':'')+
-`<div class="box rs" style="--c:${col}"><div class="lab">Dossiê TeCo · ${esc(d.razao)}</div><div class="rg"><div class="lv">${lv}</div><div><div class="sc">${r.sc}<small>/100</small></div><div class="mut">Fontes automáticas: ${r.ans} de ${r.tot}${r.tot<3?' (as demais ainda não estão publicadas)':''}</div></div></div>
+`<div class="box rs" style="--c:${col}"><div class="lab">Dossiê TeCo · ${esc(d.razao)}</div><div class="rg"><div class="lv">${lv}</div><div><div class="sc">${r.sc}<small>/100</small></div><div class="mut">Fontes automáticas: ${r.ans} de ${r.tot}${r.tot<COV.length?' (as demais ainda não estão publicadas)':''}</div></div></div>
 <p><b>${pend?'Consultando as fontes…':REC[r.lv]}</b></p>${top.length?'<ul>'+top.map(x=>'<li>'+esc(x.t)+'</li>').join('')+'</ul>':''}
 <div class="mut">Indícios com base em critérios objetivos, a verificar. Matriz v${MV} · ${FIN[fin]} · ${new Date(ts).toLocaleString('pt-BR')} · carimbo <span id="stamp">…</span></div></div>
 <div class="box"><div class="lab">Sinais de alerta</div>${r.fl.length?r.fl.map(x=>`<div class="fl" style="--c:${LC[x.l]}"><b>${x.id} · ${LV[x.l]}</b>${esc(x.t)}<br><span class="mut">${esc(x.w)} ${x.l!=='N'?'<b>O que fazer:</b> '+ACT[x.l]:''}</span></div>`).join(''):'<div class="fl" style="--c:var(--B)">Nenhum sinal de alerta nos itens cobertos.</div>'}</div>
