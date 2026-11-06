@@ -1,0 +1,52 @@
+name: Atualizar dados e publicar TeCo
+on:
+  schedule:
+    - cron: "0 7 * * *"   # todo dia, 07:00 UTC (04:00 em Brasília)
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Trimestre (a PGFN atualiza a cada 3 meses)
+        id: q
+        run: echo "q=$(date +%Y)-$(( ($(date +%-m)-1)/3 ))" >> "$GITHUB_OUTPUT"
+      - name: Cache da PGFN
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: dados/pgfn
+          key: pgfn-${{ steps.q.outputs.q }}-${{ hashFiles('scripts/pgfn_urls.txt') }}
+      - name: Sanções (CEIS, CNEP, CEPIM), todo dia
+        run: python scripts/build_dados.py sancoes
+      - name: PGFN (só quando o trimestre ou a lista de URLs muda)
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: python scripts/build_dados.py pgfn
+      - name: Montar o site
+        run: |
+          mkdir _site
+          cp teco.html _site/index.html
+          cp -r dados _site/dados
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4
