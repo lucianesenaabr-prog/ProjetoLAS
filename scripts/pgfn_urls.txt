@@ -1,0 +1,4 @@
+# Cole aqui, uma por linha, as URLs dos arquivos .zip da dívida ativa (dados abertos da PGFN).
+# Onde achar: página "Dados Abertos" da PGFN (gov.br/pgfn). Use os grupos "Dívida Ativa Geral" e "Dívida Previdenciária"
+# (a PGFN orienta somar os dois para o previdenciário). Os arquivos são divididos por UF: liste todos.
+# Linhas começadas com # são ignoradas.
