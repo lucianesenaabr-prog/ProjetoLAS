@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>TeCo — Compliance sem complicação</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;800&display=swap" rel="stylesheet">
-<!-- Estatística gratuita e sem cookie: cole aqui o script do Cloudflare Web Analytics ou do GoatCounter -->
+<script src="config.js"></script>
 <style>
 :root{--bg:#050506;--cd:#0c0c0f;--tx:#f2f2f4;--mut:#9a9aa3;--ln:#3a3a40;--pk:#ee1260;--C:#ee1260;--R:#ff7a1a;--M:#f5c518;--B:#2ed47a;--I:#8f9bb3}
 *{box-sizing:border-box}
@@ -65,9 +65,9 @@ details .gl{display:grid;grid-template-columns:96px 1fr;gap:6px 14px;padding:10p
 <li>A finalidade da consulta multiplica por 1,5 as categorias mais importantes para ela.</li>
 <li>Beneficiário final: corte de 20% de participação. Confirme no contrato social.</li></ul>
 <div class="lab" style="margin-top:18px">O que significa cada código</div><div id="gl"></div></section>
-<footer>TeCo é uma ferramenta de apoio e não substitui análise jurídica nem parecer de Compliance. Os resultados são indícios a verificar. Dados de sócios são públicos; use-os só para verificação legítima (LGPD).</footer>
+<footer>TeCo é uma ferramenta de apoio e não substitui análise jurídica nem parecer de Compliance. Os resultados são indícios a verificar. Dados de sócios são públicos; use-os só para verificação legítima (LGPD). O TeCo registra as visitas de forma anônima (origem do acesso, idioma e fuso horário), sem cookies e sem guardar o CNPJ consultado.</footer>
 <div class="bar"><span id="qs"></span><span>Compliance sem complicação</span><a class="bt" id="ct" target="_blank" rel="noopener noreferrer">Fale com um analista →</a></div>
-<dialog id="lead"><form id="lf"><div class="lab">Baixar dossiê</div><p class="mut">Informe seus dados para baixar o PDF. Usamos só para contato sobre o dossiê (LGPD).</p><input name="nome" placeholder="Nome" required><input name="email" type="email" placeholder="E-mail" required><input name="empresa" placeholder="Empresa"><label><input type="checkbox" required>Autorizo o uso dos meus dados para esse contato.</label><div class="seg"><button class="bt pk">Baixar PDF</button><button type="button" class="bt" onclick="document.getElementById('lead').close()">Cancelar</button></div></form></dialog>
+<dialog id="lead"><form id="lf"><div class="lab">Baixar dossiê</div><p class="mut">Informe seus dados para baixar o PDF. Eles são enviados a Luciane Sena, junto com o CNPJ consultado, e usados só para contato sobre o dossiê e o TeCo (LGPD). Para pedir a exclusão, fale comigo pelo LinkedIn.</p><input name="nome" placeholder="Nome" required><input name="email" type="email" placeholder="E-mail" required><input name="empresa" placeholder="Empresa"><label><input type="checkbox" required>Autorizo o uso dos meus dados para esse contato.</label><div class="seg"><button class="bt pk">Baixar PDF</button><button type="button" class="bt" onclick="document.getElementById('lead').close()">Cancelar</button></div></form></dialog>
 
 <script id="eng">
 const MV='1.1',PTS={R:30,M:15,B:5},CAP=45;
@@ -127,12 +127,16 @@ mk({razao:'HORIZONTE TECNOLOGIA S.A.',fant:'Horizonte Tech',cnpj:'98.765.432/000
 mk({razao:'NOVA ESTRELA SERVIÇOS LTDA',fant:'Nova Estrela',cnpj:'45.678.901/0001-23',sit:'ATIVA',sitData:'2021-05-12',abertura:'2021-05-12',nat:'Sociedade Empresária Limitada',porte:'EMPRESA DE PEQUENO PORTE',cap:50000,cnae:'Serviços de manutenção predial',cnaesN:6,compl:'',end:'Rua do Comércio, 45, Centro, Campinas/SP',socios:[{n:'PEDRO R. ALVES',q:'Sócio-Administrador',e:'2021-05-12'},{n:'LÚCIA T. MOURA',q:'Sócio',e:'2021-05-12'},{n:'RAUL G. PINTO',q:'Sócio',e:'2023-02-01'}]},{'SAN-01':{s:'f',ev:['CEIS · Suspensão · PREFEITURA FICTÍCIA · 01/03/2026 a sem data final']},'SAN-05':{s:'ok'},'SAN-02':{s:'ok'},'FIS-05':{s:'ok'},'FIS-01':{s:'f',ev:['Dívida ativa: R$ 480.000,00 em cobrança (5 inscrições). Dado fictício.']}})];
 </script>
 <script>
-const $=id=>document.getElementById(id),LIM=3,LIMITE=false,FORM_URL='',CONTATO='https://www.linkedin.com/in/luciane-sena-61a923134';
+const $=id=>document.getElementById(id),LIM=3,LIMITE=false,FORM_URL=(window.TECO_CONFIG||{}).FORM_URL||'',CONTATO='https://www.linkedin.com/in/luciane-sena-61a923134';
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=c=>c.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2}).*/,'$1.$2.$3/$4-$5'),dt=s=>s?s.split('-').reverse().join('/'):'—';
 const ls=(k,v)=>{try{if(v!==undefined)localStorage.setItem(k,v);return localStorage.getItem(k)||''}catch(e){return ''}};
 const Q=()=>+ls('teco_q')||0,qs=()=>{$('qs').textContent=LIMITE?'Consultas grátis: restam '+Math.max(0,LIM-Q())+' de '+LIM:'Modo teste: consultas ilimitadas'};
 let cur=null;$('ct').href=CONTATO;qs();
+const ctx=()=>{let o='direto',z='';try{o=new URLSearchParams(location.search).get('utm_source')||(document.referrer?new URL(document.referrer).hostname:'direto')}catch(e){}try{z=Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){}return{origem:o,idioma:navigator.language||'',fuso:z}};
+const dono=()=>{try{if(new URLSearchParams(location.search).get('dono')==='1')localStorage.setItem('teco_dono','1');return localStorage.getItem('teco_dono')==='1'}catch(e){return false}};
+function reg(o){if(!FORM_URL||dono())return;try{fetch(FORM_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(o)}).catch(()=>{})}catch(e){}}
+try{if(!sessionStorage.getItem('teco_v')){sessionStorage.setItem('teco_v','1');reg(Object.assign({tipo:'visita'},ctx()))}}catch(e){reg(Object.assign({tipo:'visita'},ctx()))}
 function valid(c){if(c.length!==14||/^(\d)\1+$/.test(c))return false;const dv=n=>{let p=n-7,s=0;for(let i=0;i<n;i++){s+=+c[i]*p--;if(p<2)p=9}const r=s%11;return r<2?0:11-r};return dv(12)==c[12]&&dv(13)==c[13]}
 $('cnpj').addEventListener('input',e=>{const d=e.target.value.replace(/\D/g,'').slice(0,14);e.target.value=d.length>12?fmt(d):d.replace(/^(\d{2})(\d{0,3})(\d{0,3})(\d{0,4})/,(m,a,b,c,x)=>[a,b&&'.'+b,c&&'.'+c,x&&'/'+x].filter(Boolean).join(''))});
 $('cnpj').addEventListener('keydown',e=>{if(e.key==='Enter')go()});$('go').onclick=go;
@@ -143,14 +147,14 @@ async function go(){const c=$('cnpj').value.replace(/\D/g,'');$('err').textConte
 if(!valid(c)){$('err').textContent='CNPJ inválido. Confira os 14 dígitos.';return}
 if(LIMITE&&Q()>=LIM){$('err').innerHTML='Você usou as '+LIM+' consultas grátis. Para mais dossiês, <a href="'+CONTATO+'" target="_blank" rel="noopener noreferrer">fale com a Luciane</a>.';return}
 $('go').disabled=true;$('go').textContent='Consultando…';
-try{const r=await fetch('https://brasilapi.com.br/api/cnpj/v1/'+c);if(r.status===404)throw new Error('CNPJ não encontrado na Receita Federal.');if(!r.ok)throw new Error('net');const a=await r.json();ls('teco_q',Q()+1);qs();
+try{const r=await fetch('https://brasilapi.com.br/api/cnpj/v1/'+c);if(r.status===404)throw new Error('CNPJ não encontrado na Receita Federal.');if(!r.ok)throw new Error('net');const a=await r.json();ls('teco_q',Q()+1);qs();reg(Object.assign({tipo:'consulta'},ctx()));
 openR({razao:a.razao_social,fant:a.nome_fantasia,cnpj:fmt(c),sit:(a.descricao_situacao_cadastral||'').toUpperCase(),sitData:a.data_situacao_cadastral,abertura:a.data_inicio_atividade,nat:a.natureza_juridica,porte:(a.porte||a.descricao_porte||'').toUpperCase(),cap:a.capital_social,cnae:a.cnae_fiscal_descricao,cnaesN:(a.cnaes_secundarios||[]).length,mei:!!a.opcao_pelo_mei,compl:a.complemento||'',end:[a.descricao_tipo_de_logradouro,a.logradouro,a.numero,a.complemento].filter(Boolean).join(' ')+', '+a.bairro+', '+a.municipio+'/'+a.uf+', CEP '+a.cep,socios:(a.qsa||[]).map(s=>({n:s.nome_socio,q:s.qualificacao_socio,e:s.data_entrada_sociedade}))},false,{})}
 catch(e){$('err').textContent=e.message==='net'||e.name==='TypeError'?'Não foi possível acessar a base da Receita agora. Tente de novo em instantes.':e.message}
 $('go').disabled=false;$('go').textContent='Consultar →'}
 async function stamp(){try{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify([cur.d,cur.res,cur.fin,cur.ts,MV])));$('stamp').textContent=[...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,16)}catch(e){$('stamp').textContent='indisponível'}}
 function dl(){if(ls('teco_lead'))print();else $('lead').showModal()}
 $('lf').onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));f.cnpj=cur.d.cnpj;f.origem=new URLSearchParams(location.search).get('utm_source')||'direto';ls('teco_lead','1');
-if(FORM_URL){try{await fetch(FORM_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(f)})}catch(_){}}
+f.tipo='contato';Object.assign(f,ctx());reg(f);
 $('lead').close();print()};
 async function jget(u){const r=await fetch(u);if(r.status===404)return null;if(!r.ok)throw 0;return r.json()}
 async function loadAuto(){if(cur.demo||cur.al)return;cur.al=1;const c=cur,cn=c.d.cnpj.replace(/\D/g,''),p=cn.slice(0,3),set=(id,s,ev)=>{c.res[id]={s,ev}};
